@@ -3,15 +3,23 @@ import plotly.express as px
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 
-app = dash.Dash(__name__)
+
+app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
 
 # Load data
 df = pd.read_csv("save_the_bees.csv")
 
 app.layout = html.Div([
-    html.H1("Bees Population Visualization", style={'text-align': 'center'}),
-
+html.H1("Bees Population Visualization", style={
+        'text-align': 'center',
+        'background': 'linear-gradient(to right, #FFD700, #FF8C00)',
+        'WebkitBackgroundClip': 'text',
+        'color': 'transparent',
+        'fontSize': '48px',
+        'fontWeight': 'bold',
+    }),
    # Year Slider
     dcc.Slider(
         id="slct-year",
@@ -29,7 +37,10 @@ app.layout = html.Div([
         options=[{"label": state, "value": state} for state in df["state"].unique()],
         multi=True,
         value=None,
-        style={'width': "40%"},
+        style={
+            'width': "40%",
+            'color': 'black',  
+        },        
         placeholder="Select State(s)"
     ),
     html.Br(),
@@ -41,14 +52,18 @@ app.layout = html.Div([
     dcc.Tabs([
         dcc.Tab(label='Bee Population Map', children=[
             dcc.Graph(id="bee_map", figure={})
-        ]),
+        ],style={'backgroundColor': '#FFA500', 'color': 'black'}),
         dcc.Tab(label='Colony Loss Over Time', children=[
             dcc.Graph(id="colony_loss_time", figure={})
-        ]),
+        ],style={'backgroundColor': '#FFA500', 'color': 'black'}),
         dcc.Tab(label='Causes of Colony Loss', children=[
             dcc.Graph(id="loss_causes_bar", figure={})
-        ]),
-    ])
+        ],style={'backgroundColor': '#FFA500', 'color': 'black'}),
+    ],
+    style={
+            'color': 'black', 
+            'background-color' : '#FFD700'
+        } )
 ])
 
 @app.callback(
