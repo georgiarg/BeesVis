@@ -19,14 +19,35 @@ quarter_to_season = {
 }
 
 app.layout = html.Div([
-html.H1("Bees Population Visualization", style={
-        'text-align': 'center',
-        'background': 'linear-gradient(to right, #FFD700, #FF8C00)',
-        'WebkitBackgroundClip': 'text',
-        'color': 'transparent',
-        'fontSize': '48px',
-        'fontWeight': 'bold',
+    html.Div([
+          # Bee Image next to the title (smaller size)
+        html.Div(
+            children=[html.Img(id='bee_image', src='assets/bee.png', className='happy-bee')],
+            style={
+                'display': 'inline-block',  # Make sure it sits next to the title
+                'verticalAlign': 'middle',  # Align vertically with the title
+            }
+        ),
+        html.H1("Bees Population Visualization", style={
+            'text-align': 'center',
+            'background': 'linear-gradient(to right, #FFD700, #FF8C00)',
+            'WebkitBackgroundClip': 'text',
+            'color': 'transparent',
+            'fontSize': '48px',
+            'fontWeight': 'bold',
+            'flex': '1',  # Take up the available space
+            'display': 'inline-block',
+            'margin': '0',
+        }),
+
+      
+    ], style={
+        'display': 'flex',  # Use flexbox to align the items horizontally
+        'justifyContent': 'center',  # Center horizontally
+        'alignItems': 'center',  # Align vertically
+        'marginBottom': '20px'  # Some space below the title + bee
     }),
+
    # Year Slider
     dcc.Slider(
         id="slct-year",
@@ -95,6 +116,7 @@ def update_graphs(selected_year, selected_states):
 
     # Calculate the yearly average for `num_colonies` for each state
     df_avg = df.groupby(['state', 'state_code', 'year'])['num_colonies'].mean().reset_index()
+
 
     # Filter the data for the selected year
     dff = df_avg[df_avg["year"] == selected_year]
