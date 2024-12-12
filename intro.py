@@ -206,26 +206,58 @@ def update_graphs(selected_year, selected_states):
         template='plotly_dark'
     )
     # 4. Colony Loss by Quarter
-    dff2 = df[df["year"] == selected_year]
+    # dff2 = df[df["year"] == selected_year]
 
 
+    # if selected_states:
+    #     dff_quarter_loss = dff2[dff2["state"].isin(selected_states)].groupby('quarter')['lost_colonies'].mean().reset_index()
+    # else:
+    #     dff_quarter_loss = dff2.groupby('quarter')['lost_colonies'].mean().reset_index()
+
+    # dff_quarter_loss['season'] = dff_quarter_loss['quarter'].map(quarter_to_season)
+
+    # # Create the pie chart
+    # loss_by_quarter_fig = px.pie(
+    #     dff_quarter_loss,
+    #     names='season',
+    #     values='lost_colonies',
+    #     color='season',
+    #     title=f"Colony Loss by Season in {selected_year}",
+    #     labels={'lost_colonies': 'Avg Lost Colonies'},
+    #     template='plotly_dark'
+    # )
+
+     # 4. Colony Bar Chart by Season
+    dff = df.copy()
+    # Updated Colony Bar Chart by Season (Dynamic Year and State Filter)
     if selected_states:
-        dff_quarter_loss = dff2[dff2["state"].isin(selected_states)].groupby('quarter')['lost_colonies'].mean().reset_index()
+        # Filter by selected year and states
+        dff_season = df[(df["year"] == selected_year) & (df["state"].isin(selected_states))] \
+            .groupby(['year', 'quarter', 'state'])['num_colonies'].sum().reset_index()
     else:
-        dff_quarter_loss = dff2.groupby('quarter')['lost_colonies'].mean().reset_index()
+        # Filter only by selected year
+        dff_season = df[df["year"] == selected_year].groupby(['year', 'quarter'])['num_colonies'].sum().reset_index()
 
-    dff_quarter_loss['season'] = dff_quarter_loss['quarter'].map(quarter_to_season)
+    # Map quarters to seasons
+    dff_season['season'] = dff_season['quarter'].map(quarter_to_season)
 
-    # Create the pie chart
-    loss_by_quarter_fig = px.pie(
-        dff_quarter_loss,
-        names='season',
-        values='lost_colonies',
-        color='season',
-        title=f"Colony Loss by Season in {selected_year}",
-        labels={'lost_colonies': 'Avg Lost Colonies'},
+    # Create the bar chart
+    loss_by_quarter_fig = px.bar(
+        dff_season,
+        x='season',
+        y='num_colonies',
+        color='state' if selected_states else None,  # Use state as color if selected
+        barmode='group',
+        title=f"Number of Colonies by Season in {selected_year}",
+        labels={'num_colonies': 'Number of Colonies', 'season': 'Season'},
         template='plotly_dark'
     )
+
+
+    return container, bee_map_fig, time_fig, causes_fig, loss_by_quarter_fig
+
+
+
 
     return container, bee_map_fig, time_fig, causes_fig, loss_by_quarter_fig
 
